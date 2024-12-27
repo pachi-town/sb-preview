@@ -4,14 +4,14 @@ const fileInput = document.getElementById('fileInput');
 const croppedImage = document.getElementById('croppedImage');
 
 // 制限定数
-const MAX_FILE_SIZE = 735572480; // 701MB
+const MAX_FILE_SIZE = 717312; // 701KB
 const ALLOWED_WIDTH = 800;
 const ALLOWED_HEIGHT = 2000;
 
 // 画像ファイルの読み込み
 function handleImageUpload(file) {
     if (file.size > MAX_FILE_SIZE) {
-        displayError("ファイルサイズが701MBを超えています");
+        displayError("ファイルサイズが701KBを超えています");
         return;
     }
 
