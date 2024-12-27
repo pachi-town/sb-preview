@@ -3,17 +3,15 @@ const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
 const croppedImage = document.getElementById('croppedImage');
 
-// エラーメッセージ表示エリア
-const errorMessage = document.createElement('p');
-errorMessage.style.color = 'red';
-errorMessage.style.marginTop = '10px';
-errorMessage.style.fontSize = '14px';
-uploadZone.appendChild(errorMessage);
+// 制限定数
+const MAX_FILE_SIZE = 735572480; // 701MB
+const ALLOWED_WIDTH = 800;
+const ALLOWED_HEIGHT = 2000;
 
-// 画像ファイルの読み込みとサイズチェック
+// 画像ファイルの読み込み
 function handleImageUpload(file) {
-    if (!file.type.match('image/(jpeg|png)')) {
-        showError('形式が違います（jpgまたはpngのみ対応）');
+    if (file.size > MAX_FILE_SIZE) {
+        displayError("ファイルサイズが701MBを超えています");
         return;
     }
 
@@ -21,16 +19,25 @@ function handleImageUpload(file) {
     reader.onload = function (e) {
         const img = new Image();
         img.onload = function () {
-            if (img.width === 800 && img.height === 2000) {
-                cropImage(img);
-                clearError();
-            } else {
-                showError('サイズが違います（800×2000pxのみ対応）');
+            if (img.width !== ALLOWED_WIDTH || img.height !== ALLOWED_HEIGHT) {
+                displayError("サイズが違います");
+                return;
             }
+            cropImage(img);
         };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+}
+
+// エラーメッセージを表示
+function displayError(message) {
+    uploadZone.style.borderColor = "red";
+    uploadZone.textContent = message;
+    setTimeout(() => {
+        uploadZone.textContent = ""; // エラーを消す
+        uploadZone.style.borderColor = "#007bff";
+    }, 3000); // 3秒後にエラーメッセージをリセット
 }
 
 // 画像を切り取る処理
@@ -47,16 +54,6 @@ function cropImage(img) {
     croppedImage.src = canvas.toDataURL();
 }
 
-// エラーメッセージを表示
-function showError(message) {
-    errorMessage.textContent = message;
-}
-
-// エラーメッセージをクリア
-function clearError() {
-    errorMessage.textContent = '';
-}
-
 // ドラッグアンドドロップのイベント
 uploadZone.addEventListener('dragover', (event) => {
     event.preventDefault();
@@ -69,9 +66,8 @@ uploadZone.addEventListener('dragleave', () => {
 
 uploadZone.addEventListener('drop', (event) => {
     event.preventDefault();
-    uploadZone.style.borderColor = "#007bff";
     const file = event.dataTransfer.files[0];
-    if (file) {
+    if (file && file.type.startsWith('image/')) {
         handleImageUpload(file);
     }
 });
@@ -79,7 +75,7 @@ uploadZone.addEventListener('drop', (event) => {
 // ファイル選択のイベント
 fileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
-    if (file) {
+    if (file && file.type.startsWith('image/')) {
         handleImageUpload(file);
     }
 });
