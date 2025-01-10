@@ -1,17 +1,19 @@
-// HTML要素を取得
 const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
-const croppedImage = document.getElementById('croppedImage');
+const croppedImage1 = document.getElementById('croppedImage1');
+const croppedImage2 = document.getElementById('croppedImage2');
 
-// 制限定数
-const MAX_FILE_SIZE = 717312; // 701KB
-const ALLOWED_WIDTH = 800;
-const ALLOWED_HEIGHT = 2000;
+// エラーメッセージ表示エリア
+const errorMessage = document.createElement('p');
+errorMessage.style.color = 'red';
+errorMessage.style.marginTop = '10px';
+errorMessage.style.fontSize = '14px';
+uploadZone.appendChild(errorMessage);
 
-// 画像ファイルの読み込み
+// 画像ファイルの読み込みとサイズチェック
 function handleImageUpload(file) {
-    if (file.size > MAX_FILE_SIZE) {
-        displayError("ファイルサイズが701KBを超えています");
+    if (!file.type.match('image/(jpeg|png)')) {
+        showError('形式が違います（jpgまたはpngのみ対応）');
         return;
     }
 
@@ -19,39 +21,50 @@ function handleImageUpload(file) {
     reader.onload = function (e) {
         const img = new Image();
         img.onload = function () {
-            if (img.width !== ALLOWED_WIDTH || img.height !== ALLOWED_HEIGHT) {
-                displayError("サイズが違います");
-                return;
+            if (img.width === 800 && img.height === 2000) {
+                cropImages(img);
+                clearError();
+            } else {
+                showError('サイズが違います（800×2000pxのみ対応）');
             }
-            cropImage(img);
         };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
 
-// エラーメッセージを表示
-function displayError(message) {
-    uploadZone.style.borderColor = "red";
-    uploadZone.textContent = message;
-    setTimeout(() => {
-        uploadZone.textContent = ""; // エラーを消す
-        uploadZone.style.borderColor = "#007bff";
-    }, 3000); // 3秒後にエラーメッセージをリセット
+// 画像を切り取る処理
+function cropImages(img) {
+    // 表示イメージ①: 上360px + 下450pxを削除
+    const canvas1 = document.createElement('canvas');
+    const ctx1 = canvas1.getContext('2d');
+    canvas1.width = 800;
+    canvas1.height = 1190; // 2000px - 360px (上) - 450px (下)
+    ctx1.drawImage(img, 0, 360, 800, 1190, 0, 0, 800, 1190);
+
+    const croppedImage1 = document.getElementById("croppedImage1");
+    croppedImage1.src = canvas1.toDataURL();
+
+    // 表示イメージ②: 上360px + 下360pxを削除
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = 800;
+    canvas2.height = 1280; // 2000px - 360px (上) - 360px (下)
+    ctx2.drawImage(img, 0, 360, 800, 1280, 0, 0, 800, 1280);
+
+    const croppedImage2 = document.getElementById("croppedImage2");
+    croppedImage2.src = canvas2.toDataURL();
 }
 
-// 画像を切り取る処理
-function cropImage(img) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
 
-    // 切り取る範囲を指定
-    canvas.width = 800;
-    canvas.height = 1190; // 2000px - 360px (上) - 450px (下)
-    ctx.drawImage(img, 0, -360, 800, 2000);
+// エラーメッセージを表示
+function showError(message) {
+    errorMessage.textContent = message;
+}
 
-    // 切り取った画像をプレビューに表示
-    croppedImage.src = canvas.toDataURL();
+// エラーメッセージをクリア
+function clearError() {
+    errorMessage.textContent = '';
 }
 
 // ドラッグアンドドロップのイベント
@@ -66,8 +79,9 @@ uploadZone.addEventListener('dragleave', () => {
 
 uploadZone.addEventListener('drop', (event) => {
     event.preventDefault();
+    uploadZone.style.borderColor = "#007bff";
     const file = event.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
         handleImageUpload(file);
     }
 });
@@ -75,7 +89,7 @@ uploadZone.addEventListener('drop', (event) => {
 // ファイル選択のイベント
 fileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
         handleImageUpload(file);
     }
 });

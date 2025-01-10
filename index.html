@@ -22,7 +22,7 @@
                 <div class="upload-content">
                     <label class="upload-button">
                         ファイルを選択
-                        <input type="file" id="fileInput" accept="image/jpeg, image/png" />
+                        <input type="file" id="fileInput" accept="image/*" />
                     </label>
                     <p class="combined-instruction">
                         または<br>ここにファイルをドロップしてください
@@ -30,15 +30,27 @@
                 </div>
             </div>
         </div>
-        <div class="preview">
-            <h3 class="preview-title">【表示画像の想定】</h3>
-            <div class="phone-frame">
-                <img id="croppedImage" alt="Cropped Image" />
+        <div class="preview-section">
+            <div class="preview">
+                <h3 class="preview-title">【表示イメージ①】</p>上360 下450(px)が削られた場合</h3>
+                <div class="phone-frame">
+                    <img id="croppedImage1" alt="Cropped Image 1" />
+                </div>
+                <p class="note">
+                    <span class="note-highlight">※上記プレビューはイメージです</span></p>
+                    <span class="note-small">端末により見える範囲が前後しますが<br>表示イメージ内で収まっている訴求内容は<br><b><font size="3">より多くの端末</font></b>で表示されます</span>
+                </p>
             </div>
-            <p class="note">
-                <span class="note-highlight">※上記プレビューはイメージです</span><br>
-                <span class="note-small">端末により<br>見える範囲が前後しますが表示イメージ内で<br>収まっている訴求内容は多くの端末で表示されます</span>
-            </p>
+            <div class="preview">
+                <h3 class="preview-title">【表示イメージ②】</p>上360 下360(px)が削られた場合</h3>
+                <div class="phone-frame">
+                    <img id="croppedImage2" alt="Cropped Image 2" />
+                </div>
+                <p class="note">
+                    <span class="note-highlight">※上記プレビューはイメージです</span></p>
+                    <span class="note-small">端末により見える範囲が前後しますが<br>表示イメージ内で収まっている訴求内容は<br><b><font size="3">比較的新しい端末</font></b>に表示されることが多いです</span>
+                </p>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
