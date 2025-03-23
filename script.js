@@ -39,8 +39,9 @@ function cropImages(img) {
     const canvas1 = document.createElement('canvas');
     const ctx1 = canvas1.getContext('2d');
     canvas1.width = 800;
-    canvas1.height = 1190; // 2000px - 360px (上) - 450px (下)
-    ctx1.drawImage(img, 0, 360, 800, 1190, 0, 0, 800, 1190);
+    canvas1.height = 1390; // 2000px - 290px (上) - 320px (下)
+    ctx1.drawImage(img, 0, 290, 800, 1390, 0, 0, 800, 1390);
+
 
     const croppedImage1 = document.getElementById("croppedImage1");
     croppedImage1.src = canvas1.toDataURL();
@@ -49,8 +50,8 @@ function cropImages(img) {
     const canvas2 = document.createElement('canvas');
     const ctx2 = canvas2.getContext('2d');
     canvas2.width = 800;
-    canvas2.height = 1280; // 2000px - 360px (上) - 360px (下)
-    ctx2.drawImage(img, 0, 360, 800, 1280, 0, 0, 800, 1280);
+    canvas2.height = 1420; // 2000px - 290px (上) - 290px (下)
+    ctx2.drawImage(img, 0, 290, 800, 1420, 0, 0, 800, 1420);
 
     const croppedImage2 = document.getElementById("croppedImage2");
     croppedImage2.src = canvas2.toDataURL();
