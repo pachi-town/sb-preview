@@ -35,7 +35,7 @@ function handleImageUpload(file) {
 
 // 画像を切り取る処理
 function cropImages(img) {
-    // 表示イメージ①: 上360px + 下450pxを削除
+    // 表示イメージ①: 上290px + 下320pxを削除
     const canvas1 = document.createElement('canvas');
     const ctx1 = canvas1.getContext('2d');
     canvas1.width = 800;
@@ -46,7 +46,7 @@ function cropImages(img) {
     const croppedImage1 = document.getElementById("croppedImage1");
     croppedImage1.src = canvas1.toDataURL();
 
-    // 表示イメージ②: 上360px + 下360pxを削除
+    // 表示イメージ②: 上290px + 下290pxを削除
     const canvas2 = document.createElement('canvas');
     const ctx2 = canvas2.getContext('2d');
     canvas2.width = 800;
