@@ -1,71 +1,59 @@
+// HTML要素を取得
 const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
 const croppedImage1 = document.getElementById('croppedImage1');
 const croppedImage2 = document.getElementById('croppedImage2');
+const errorMessage = document.getElementById('error-message');
 
-// エラーメッセージ表示エリア
-const errorMessage = document.createElement('p');
-errorMessage.style.color = 'red';
-errorMessage.style.marginTop = '10px';
-errorMessage.style.fontSize = '14px';
-uploadZone.appendChild(errorMessage);
+// 最大許容サイズ（701KB = 717,824バイト）
+const MAX_FILE_SIZE = 717824;
 
-// 画像ファイルの読み込みとサイズチェック
+// 画像ファイルの読み込み
 function handleImageUpload(file) {
-    if (!file.type.match('image/(jpeg|png)')) {
-        showError('形式が違います（jpgまたはpngのみ対応）');
+    // ファイル形式チェック
+    if (!file.type.match(/image\/(jpeg|png)/)) {
+        displayError("対応していないファイル形式です（JPGまたはPNGのみ）");
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const img = new Image();
-        img.onload = function () {
-            if (img.width === 800 && img.height === 2000) {
-                cropImages(img);
-                clearError();
-            } else {
-                showError('サイズが違います（800×2000pxのみ対応）');
-            }
-        };
-        img.src = e.target.result;
+    // ファイルサイズチェック
+    if (file.size > MAX_FILE_SIZE) {
+        displayError("ファイルサイズが大きすぎます（最大701KB）");
+        return;
+    }
+
+    // 画像サイズチェック
+    const img = new Image();
+    img.onload = function () {
+        if (img.width !== 800 || img.height !== 2000) {
+            displayError("サイズが違います（800×2000pxのみ対応）");
+            return;
+        }
+        // 表示イメージ① (上290px + 下320px 削除)
+        cropImage(img, croppedImage1, 290, 320);
+        // 表示イメージ② (上290px + 下290px 削除)
+        cropImage(img, croppedImage2, 290, 290);
     };
-    reader.readAsDataURL(file);
+    img.src = URL.createObjectURL(file);
 }
 
 // 画像を切り取る処理
-function cropImages(img) {
-    // 表示イメージ①: 上290px + 下320pxを削除
-    const canvas1 = document.createElement('canvas');
-    const ctx1 = canvas1.getContext('2d');
-    canvas1.width = 800;
-    canvas1.height = 1390; // 2000px - 290px (上) - 320px (下)
-    ctx1.drawImage(img, 0, 290, 800, 1390, 0, 0, 800, 1390);
+function cropImage(img, previewElement, topCrop, bottomCrop) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
+    // 切り取る範囲を指定
+    canvas.width = 800;
+    canvas.height = 2000 - topCrop - bottomCrop;
+    ctx.drawImage(img, 0, -topCrop, 800, 2000);
 
-    const croppedImage1 = document.getElementById("croppedImage1");
-    croppedImage1.src = canvas1.toDataURL();
-
-    // 表示イメージ②: 上290px + 下290pxを削除
-    const canvas2 = document.createElement('canvas');
-    const ctx2 = canvas2.getContext('2d');
-    canvas2.width = 800;
-    canvas2.height = 1420; // 2000px - 290px (上) - 290px (下)
-    ctx2.drawImage(img, 0, 290, 800, 1420, 0, 0, 800, 1420);
-
-    const croppedImage2 = document.getElementById("croppedImage2");
-    croppedImage2.src = canvas2.toDataURL();
+    // 切り取った画像をプレビューに表示
+    previewElement.src = canvas.toDataURL();
 }
 
-
-// エラーメッセージを表示
-function showError(message) {
+// エラーメッセージを表示する関数
+function displayError(message) {
     errorMessage.textContent = message;
-}
-
-// エラーメッセージをクリア
-function clearError() {
-    errorMessage.textContent = '';
 }
 
 // ドラッグアンドドロップのイベント
@@ -80,7 +68,6 @@ uploadZone.addEventListener('dragleave', () => {
 
 uploadZone.addEventListener('drop', (event) => {
     event.preventDefault();
-    uploadZone.style.borderColor = "#007bff";
     const file = event.dataTransfer.files[0];
     if (file) {
         handleImageUpload(file);
