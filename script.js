@@ -10,6 +10,17 @@ errorMessage.style.marginTop = '10px';
 errorMessage.style.fontSize = '14px';
 uploadZone.appendChild(errorMessage);
 
+// 最大許容サイズ（701KB = 717,824バイト）
+const MAX_FILE_SIZE = 717824;
+
+// 画像ファイルの読み込み
+function handleImageUpload(file) {
+    // ファイルサイズチェック
+    if (file.size > MAX_FILE_SIZE) {
+        displayError("ファイルサイズが大きすぎます（最大701KB）");
+        return;
+    }
+    
 // 画像ファイルの読み込みとサイズチェック
 function handleImageUpload(file) {
     if (!file.type.match('image/(jpeg|png)')) {
