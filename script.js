@@ -10,6 +10,9 @@ const MAX_FILE_SIZE = 717824;
 
 // 画像ファイルの読み込み
 function handleImageUpload(file) {
+    // **新しい画像が選択されたら、まずエラーメッセージを消す**
+    clearError();
+
     // ファイル形式チェック
     if (!file.type.match(/image\/(jpeg|png)/)) {
         displayError("対応していないファイル形式です（JPGまたはPNGのみ）");
@@ -24,13 +27,13 @@ function handleImageUpload(file) {
 
     const img = new Image();
     img.onload = function () {
-        // 画像サイズチェック（ここで必ず確認する）
+        // 画像サイズチェック
         if (img.width !== 800 || img.height !== 2000) {
             displayError("サイズが違います（800×2000pxのみ対応）");
             return;
         }
 
-        // 正常時はエラーメッセージを消去
+        // **ここでもう一度エラーメッセージを消す（念のため）**
         clearError();
 
         // 表示イメージ① (上290px + 下320px 削除)
@@ -39,12 +42,12 @@ function handleImageUpload(file) {
         cropImage(img, croppedImage2, 290, 290);
     };
 
-    // エラーが出た時にプレビュー画像を更新しないようにする
+    // 画像の読み込みエラー処理
     img.onerror = function () {
         displayError("画像の読み込みに失敗しました");
     };
 
-    // 画像を読み込む（このタイミングで読み込ませる）
+    // 画像を読み込む
     img.src = URL.createObjectURL(file);
 }
 
@@ -65,10 +68,10 @@ function cropImage(img, previewElement, topCrop, bottomCrop) {
 // エラーメッセージを表示する関数
 function displayError(message) {
     errorMessage.textContent = message;
-    errorMessage.style.display = "block"; // エラーメッセージを表示
+    errorMessage.style.display = "block";
 }
 
-// エラーメッセージを消す関数（画像が正常なら消す）
+// **エラーメッセージを消す関数**
 function clearError() {
     errorMessage.textContent = "";
     errorMessage.style.display = "none";
