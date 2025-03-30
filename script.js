@@ -21,7 +21,7 @@ function handleImageUpload(file) {
 
     // ファイルサイズチェック
     if (file.size > MAX_FILE_SIZE) {
-        displayError("ファイルサイズが大きすぎます（最大701KB）");
+        displayError("ファイルサイズが大きすぎます（最大700KB）");
         return;
     }
 
